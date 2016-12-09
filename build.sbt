@@ -1,4 +1,4 @@
-name := "scalafundamentals"
+name := "scala-fundamentals"
 
 version := "1.0"
 
