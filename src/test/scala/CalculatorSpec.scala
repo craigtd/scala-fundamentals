@@ -11,4 +11,10 @@ class CalculatorSpec extends FlatSpec with Matchers{
     assert(calculate("1 2 + 3 4 5 - - * 6 7 8 - * /") == -2)
   }
 
+  it should "produce IllegalArgumentException when no arguments are provided" in {
+    assertThrows[IllegalArgumentException] {
+      calculate("")
+    }
+  }
+
 }
