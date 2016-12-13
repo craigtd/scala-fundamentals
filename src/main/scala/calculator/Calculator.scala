@@ -1,5 +1,8 @@
+package calculator
+
 import scala.collection.mutable.Stack
 
+// Singleton class Calculator
 object Calculator {
 
   /**

@@ -1,5 +1,7 @@
+package calculator
+
+import calculator.Calculator._
 import org.scalatest.{FlatSpec, Matchers}
-import Calculator._
 
 class CalculatorSpec extends FlatSpec with Matchers{
 
