@@ -7,30 +7,36 @@ case class Recipe (ingredients: Map[String, Mass], directions: List[String]) {
     for {
       (name, need) <- ingredients.toList
       have = kitchen.getOrElse(name, Grams(0))
-      if have.compareTo(need) < 0
+      if have < need
     } yield name
 }
 
-// This is an algebraic data type
-// sealed keyword means that no other classes outside this file can extend this
-// this can be useful to ensure that pattern matching can be exhaustive
-// general rule, make abstract defs so you can override
-sealed abstract class Mass extends Comparable[Mass]{
+trait Measured {
   def amount: Double
+  def symbol: String
+  override def toString: String = amount + symbol
+}
+
+trait Conflict {
+  override def toString: String = "problem?"
+}
+
+// order in which traits are mixed in matters - last takes precedence
+sealed trait Mass extends  Ordered[Mass] with Conflict with Measured {
   def toGrams : Grams
-  def compareTo(that: Mass): Int = (this.toGrams.amount - that.toGrams.amount).toInt
+  def compare(that: Mass): Int = (this.toGrams.amount - that.toGrams.amount).toInt
 }
 case class Grams(amount: Double) extends Mass {
-  override def toGrams: Grams = this
-  override def toString: String = amount + "g"
+  def toGrams = this
+  val symbol = "g"
 }
 case class Milligrams(amount: Double) extends Mass {
-  override def toGrams: Grams = Grams (amount / 1000)
-  override def toString: String = amount + "mg"
+  def toGrams = Grams(amount / 1000)
+  val symbol = "mg"
 }
 case class Kilograms(amount: Double) extends Mass {
-  override def toGrams: Grams = Grams (amount * 1000)
-  override def toString: String = amount + "kg"
+  def toGrams = Grams(amount * 1000)
+  val symbol = "kg"
 }
 
 
