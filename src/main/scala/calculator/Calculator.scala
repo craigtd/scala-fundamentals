@@ -5,59 +5,79 @@ import scala.collection.mutable.Stack
 // Singleton class Calculator
 object Calculator {
 
-  /**
-    * If the token is an operator, pop two operands off the stack,
-    * perform the operation and  push the results back on
-    */
-  def handleOperator(token: String, stack: Stack[Int]): Boolean = token match {
-    case "+" =>
-      val rhs = stack.pop()
-      val lhs = stack.pop()
-      stack.push(lhs + rhs)
-      true
-    case "-" =>
-      val rhs = stack.pop()
-      val lhs = stack.pop()
-      stack.push(lhs - rhs)
-      true
-    case "*" =>
-      val rhs = stack.pop()
-      val lhs = stack.pop()
-      stack.push(lhs * rhs)
-      true
-    case "/" =>
-      val rhs = stack.pop()
-      val lhs = stack.pop()
-      stack.push(lhs / rhs)
-      true
-    case _ => false
+  trait Operator {
+    def operate(lhs: Int, rhs: Int): Int
+  }
+  object Operator {
+    val operators: Map[String, Operator] =
+      Map("+" -> Add, "-" -> Subtract, "*" -> Multiply, "/" -> Divide)
+    def unapply(token:String): Option[Operator] =
+      operators.get(token)
   }
 
-  /**
-    * If the token is a number, push it on the stack
-    */
-  def handleNumber(token: String, stack: Stack[Int]): Boolean = try {
-    stack.push(token.toInt)
-    true
-  } catch {
-    case _: NumberFormatException => false
+  case object Add extends Operator {
+    def operate(lhs: Int, rhs: Int) = lhs + rhs
+    override val toString = "+"
+  }
+  case object Subtract extends Operator {
+    def operate(lhs: Int, rhs: Int) = lhs - rhs
+    override val toString = "-"
+  }
+  case object Multiply extends Operator {
+    def operate(lhs: Int, rhs: Int) = lhs * rhs
+    override val toString = "*"
+  }
+  case object Divide extends Operator {
+    def operate(lhs: Int, rhs: Int) = lhs / rhs
+    override val toString = "/"
   }
 
-  def calculate(expression: String): Int = {
-    val stack = new Stack[Int]
+  object Number {
+    def unapply(token:String): Option[Int] = try {
+      Some(token.toInt)
+    } catch {
+      case _ : NumberFormatException => None
+    }
+  }
 
-    for (token <- expression.split(" "))
-      if(!handleOperator(token, stack) && !handleNumber(token, stack))
-        throw new IllegalArgumentException("invalid token: " + token)
 
+  sealed trait Expression
+  case class NumberExpression(value: Int) extends Expression
+  case class OperationExpression(lhs: Expression, rhs: Expression, op: Operator) extends Expression
+
+  /**
+    * parse a postfix expression
+    */
+  def parse(expression: String): Expression = {
+    val stack = new Stack[Expression]
+
+    for (token <- expression.split(" ")) token match  {
+      case Number(num) => stack.push(NumberExpression(num))
+      case Operator(op) =>
+        val rhs = stack.pop()
+        val lhs = stack.pop()
+        stack.push(OperationExpression(lhs, rhs, op))
+      case _ => throw new IllegalArgumentException("invalid token: " + token)
+    }
     stack.pop()
   }
 
+  def calculate(expression: Expression): Int = expression match {
+    case NumberExpression(value) => value
+    case OperationExpression(lhs, rhs, op) => op.operate(calculate(lhs), calculate(rhs))
+  }
+
+  def toInfix(expression: Expression): String = expression match {
+    case NumberExpression(value) => value.toString
+    case OperationExpression(lhs, rhs, op) => s"(${toInfix(lhs)} $op ${toInfix(rhs)})"
+
+  }
 
   def main(args: Array[String]): Unit =
     if (args.length != 1) {
       throw new IllegalArgumentException("Usage calculator <expression>")
-    } else
-        println(calculate(args(0)))
-
+    } else {
+      val expression = parse(args(0))
+      println(s"${toInfix(expression)} = ${calculate(expression)}")
+    }
 }
