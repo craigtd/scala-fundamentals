@@ -20,4 +20,11 @@ object Examples {
   }
 
 
+
+  val toStringAll2: (List[_]) => List[String] = _ match {
+    case head :: tail => head.toString :: toStringAll2(tail)
+    case _ => Nil
+  }
 }
+
+

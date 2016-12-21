@@ -1,5 +1,6 @@
 package recursiveexamples
 import org.scalatest.{FlatSpec, Matchers}
+import recursiveexamples.Examples._
 
 
 class ExamplesSpec extends FlatSpec with Matchers{
@@ -12,4 +13,7 @@ class ExamplesSpec extends FlatSpec with Matchers{
     Examples.toStringAll(List(1,2,3)) shouldBe an[List[Int]]
   }
 
+  "toStringAll2 of List(1,2,3" should "return a list of strings" in {
+    toStringAll2(List(1,2,3)) shouldBe an[List[Int]]
+  }
 }
