@@ -16,4 +16,7 @@ class ExamplesSpec extends FlatSpec with Matchers{
   "toStringAll2 of List(1,2,3" should "return a list of strings" in {
     toStringAll2(List(1,2,3)) shouldBe an[List[Int]]
   }
+
+
+
 }
