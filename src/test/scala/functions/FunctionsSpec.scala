@@ -7,7 +7,7 @@ class FunctionsSpec extends FlatSpec with Matchers{
 
   "foldLeft of List(1,2,3) and accumulating from 0" should "return" in {
     val fn = (acc: Int, e: Int) => acc + e
-    functions.foldLeft(List(1,2,3), 0, fn) shouldBe 6
+    functions.foldLeft(List(1,2,3), 0)(fn) shouldBe 6
   }
 
   "map of List(1,2,3) and multiplying by 2" should "return List(2,4,6)" in {
@@ -23,6 +23,11 @@ class FunctionsSpec extends FlatSpec with Matchers{
   "even shorterhand map of List(1,2,3) and multiplying by 2" should "return List(2,4,6)" in {
     val result = List(1,2,3) map { _ * 2}
     result shouldBe List[Int](2,4,6)
+  }
+
+  "curried map of List(1,2,3) and adding one" should "return List(2,3,4)" in {
+    val result = map(List(1,2,3)) { _ + 1 }
+    result shouldBe List(2,3,4)
   }
 
   "filter of List(1,2,3,4,5) with mod 2" should "return List(2,4)" in {
@@ -57,6 +62,16 @@ class FunctionsSpec extends FlatSpec with Matchers{
   "groupBy" should "return a map of results" in {
     val result = List("hello", "my", "name", "is", "craig") groupBy {_.length}
     result shouldBe Map(2 -> List("my", "is"), 5 -> List("hello", "craig"), 4 -> List("name"))
+  }
+
+  "using a curried plus one function" should "return 2" in {
+    val result = plus(1)(1)
+    result shouldBe 2
+  }
+
+  "using v2 of a curried plus one function" should "return 2" in {
+    val result = plusv2(1)(1)
+    result shouldBe 2
   }
 
 }

@@ -1,14 +1,14 @@
 package object functions {
 
-  def map[A, B](list: List[A], fn: A => B): List[B] = list match {
-    case head :: tail => fn(head) :: map(tail, fn)
+  def map[A, B](list: List[A]) (fn: A => B): List[B] = list match {
+    case head :: tail => fn(head) :: map(tail)(fn)
     case _ => Nil
   }
 
 
-  def filter[A](list: List[A], fn: A => Boolean): List[A] = list match {
+  def filter[A](list: List[A])(fn: A => Boolean): List[A] = list match {
     case head :: tail =>
-      val rest = filter(tail, fn)
+      val rest = filter(tail)(fn)
       if (fn(head))
         head :: rest
       else
@@ -19,10 +19,14 @@ package object functions {
   /**
     * Function which walks from the left to the right of a list and accumulates as it goes
     */
-  def foldLeft[A, B](list: List[A], acc: B, fn: (B,A) => B): B = list match {
-    case head :: tail => foldLeft(tail, fn(acc, head), fn)
+  def foldLeft[A, B](list: List[A], acc: B) (fn: (B,A) => B): B = list match {
+    case head :: tail => foldLeft(tail, fn(acc, head))( fn)
     case _ => acc
   }
 
+  // a curried function can only take one parameter
+  val plus = { a: Int => {b : Int => a + b } }
 
+
+  def plusv2(a: Int)(b: Int): Int = a + b
 }
