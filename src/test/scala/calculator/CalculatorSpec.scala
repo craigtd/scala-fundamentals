@@ -39,6 +39,13 @@ class CalculatorSpec extends FlatSpec with Matchers with PropertyChecks{
     }
   }
 
+  "1 +" should "produce IllegalArgument exception" in {
+    assertThrows[IllegalArgumentException]  {
+      val expression = parse("1 +")
+      calculate(expression)
+    }
+  }
+
 
 
   it should "produce IllegalArgumentException when garbage is provided" in {
